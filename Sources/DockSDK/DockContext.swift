@@ -55,6 +55,9 @@ public class DockContext: NSObject {
     /// Shared URLSession for network requests
     @objc public let networking: DockNetworking
 
+    /// Spotlight command palette integration (v1.3.0)
+    @objc public let spotlight: DockSpotlightService
+
     @objc public init(hostVersion: String, sdkVersion: String, isDevMode: Bool, dockIdentifier: String) {
         self.hostVersion = hostVersion
         self.sdkVersion = sdkVersion
@@ -67,6 +70,7 @@ public class DockContext: NSObject {
         self.ui = DockUIService()
         self.logger = DockLogger(dockIdentifier: dockIdentifier)
         self.networking = DockNetworking()
+        self.spotlight = DockSpotlightService()
         super.init()
     }
 }
