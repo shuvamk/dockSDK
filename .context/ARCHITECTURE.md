@@ -17,10 +17,13 @@ DockSDK/
 ├── README.md                    # Usage instructions for dock developers
 └── Sources/
     └── DockSDK/
-        ├── DockPlugin.swift     # Core protocol — the contract every dock implements
-        ├── DockContext.swift     # Service locator passed to docks at load time
-        ├── DockManifest.swift   # Info.plist metadata parser for dock bundles
-        ├── SDKVersion.swift     # Static version constants (1.0.0)
+        ├── DockPlugin.swift             # Core protocol — the contract every dock implements
+        ├── DockContext.swift             # Service locator passed to docks at load time
+        ├── DockManifest.swift           # Info.plist metadata parser for dock bundles
+        ├── SDKVersion.swift             # Static version constants (1.2.0)
+        ├── DockKeyBinding.swift         # Keyboard shortcut type with action closure
+        ├── DockSpotlightAction.swift    # Static spotlight action + DockSpotlightResult + DockSpotlightCategory
+        ├── DockSpotlightProvider.swift  # Protocol for dynamic real-time spotlight search
         └── Services/
             ├── DockStorage.swift           # File-based JSON key-value persistence
             ├── DockSecureStorage.swift      # macOS Keychain wrapper

@@ -1,0 +1,174 @@
+This project uses a context management system in the `.context/` directory at the
+project root. You have two responsibilities: load context before working, and
+update context before ending. Both are described below. Follow them precisely.
+
+=============================================================================
+PART A — LOADING CONTEXT (DO THIS IMMEDIATELY BEFORE ANY WORK)
+=============================================================================
+
+### Step 1: Read the core context files
+
+Read these files and internalize their contents:
+
+1. `.context/CURRENT_STATE.md` — This is your primary briefing. It tells you
+   what the project is, what's working, what's broken, and what's in progress.
+2. `.context/DECISIONS.md` — This tells you WHY things are the way they are.
+   These decisions are binding unless the user explicitly asks you to revisit them.
+   Do not silently undo or contradict past decisions.
+3. `.context/ARCHITECTURE.md` — This tells you HOW the codebase is structured
+   and what conventions to follow.
+4. `.context/CHANGELOG.md` — Skim the last 5-10 entries to understand recent
+   momentum and direction.
+
+### Step 2: Check for recent session logs (optional, only if needed)
+
+If `CURRENT_STATE.md` references something unclear, or if the user asks you to
+continue specific recent work, check the last 1-2 files in `.context/sessions/`
+for detailed context. Do NOT read all session files — they're archival.
+
+### Step 3: Acknowledge your understanding
+
+Before starting any work, briefly confirm to the user:
+- What you understand the project to be
+- What you understand the current state to be
+- What you understand the immediate priorities or open work to be
+
+Keep this acknowledgment to 5-8 sentences max. Don't parrot back everything
+you read — just confirm the key points so the user can correct any
+misunderstandings before you start coding.
+
+### Step 4: Respect prior decisions throughout the session
+
+As you work:
+- Follow the conventions documented in ARCHITECTURE.md (naming, patterns, file structure)
+- Do not contradict decisions in DECISIONS.md without explicitly flagging it to the user
+  and getting approval. Say something like: "I notice a previous decision was to use X
+  for Y reason. I think we should reconsider because [reason]. Should I proceed with
+  the change?"
+- If you encounter something that contradicts the context files (e.g., the code doesn't
+  match what CURRENT_STATE.md says), flag it and ask the user rather than assuming
+  the code or the docs are wrong.
+
+### Step 5: Track your work as you go
+
+While working, keep a running mental note of:
+- What files you created, modified, or deleted
+- Any decisions you made and why
+- Any issues you discovered
+- Any things you intentionally left incomplete or deferred
+
+You will need this information for the handoff at the end.
+
+=============================================================================
+PART B — UPDATING CONTEXT (DO THIS BEFORE ENDING THE SESSION)
+=============================================================================
+
+When the user signals the session is ending (says "let's wrap up", "that's it
+for now", "we're done", "end of session", or anything similar), OR if you sense
+the conversation is reaching its natural conclusion, complete ALL of the following
+steps before your final message. If the user forgets, remind them by saying:
+"Before we close out, I need to update the .context files so the next session
+has full continuity. Let me do that now."
+
+### Step 1: Create a session log
+
+Create a new file in `.context/sessions/` named with today's date and a sequence
+number, e.g., `2025-02-26-001.md` (increment the sequence if a file with today's
+date already exists).
+
+The session log must contain:
+```markdown
+# Session [DATE-SEQ]
+
+## Summary
+[2-3 sentence overview of what was accomplished this session]
+
+## What Was Done
+- [Specific change 1: what file(s), what was added/modified/removed, and why]
+- [Specific change 2: ...]
+- [Continue for all meaningful changes]
+
+## Decisions Made
+- [Any architectural, technical, or business decisions made during this session,
+  with the reasoning behind each one]
+- [If no decisions were made, write "No new decisions"]
+
+## Issues Discovered
+- [Any bugs, inconsistencies, tech debt, or concerns found during this session]
+- [If none, write "No new issues discovered"]
+
+## Deferred / Incomplete Work
+- [Anything intentionally left unfinished, with explanation of what remains]
+- [Any TODOs added to the code]
+- [If everything was completed, write "All planned work completed"]
+
+## Files Changed
+- `path/to/file1.ext` — [what changed]
+- `path/to/file2.ext` — [what changed]
+- [List every file created, modified, or deleted]
+```
+
+### Step 2: Update `CURRENT_STATE.md`
+
+**Completely rewrite** this file to reflect the current state of the project
+AFTER this session's changes. This is not an append — it's a full replacement.
+The next LLM will read this file first and it must be accurate as of right now.
+
+Update every section:
+- **Project Overview**: Update if scope changed
+- **Tech Stack**: Add any new dependencies; remove any that were dropped
+- **Architecture Summary**: Update if structure changed
+- **Data Model**: Update if models/schema changed
+- **External Integrations**: Update if new services were added
+- **Environment & Infrastructure**: Update if setup/deploy process changed
+- **Current Status**: This is the most important section. Accurately describe
+  what's working, what's partially built, what's broken. Be specific.
+- **Known Issues & Tech Debt**: Add anything discovered this session; remove
+  anything that was fixed
+- **In Progress / Next Steps**: Update based on where we left off. What should
+  the next session focus on? What's the logical next piece of work?
+
+### Step 3: Append to `DECISIONS.md`
+
+If any decisions were made during this session (even small ones like "chose library X
+over Y" or "decided to put Z in its own module"), append them using this format:
+```markdown
+## [TODAY'S DATE]: [Decision Title]
+- **Context**: [Why this decision came up]
+- **Options considered**: [What alternatives were discussed or evaluated]
+- **Decision**: [What was chosen]
+- **Tradeoffs**: [What's good and bad about this choice]
+- **Affected areas**: [What parts of the codebase this impacts]
+```
+
+If no decisions were made, skip this step.
+
+### Step 4: Append to `CHANGELOG.md`
+
+Add an entry at the top of the changelog:
+```markdown
+## [TODAY'S DATE] — [Brief session title]
+- [Bullet-point summary of what changed, 3-8 bullets]
+- [Focus on WHAT changed, not the detailed WHY — that's in DECISIONS.md]
+```
+
+### Step 5: Update `ARCHITECTURE.md` (if applicable)
+
+Only update this if you:
+- Added new directories or significantly reorganized the file structure
+- Introduced new patterns or abstractions
+- Changed conventions (naming, error handling, etc.)
+- Added new key files that future developers/LLMs should know about
+
+If nothing structural changed, skip this step.
+
+### Step 6: Self-review
+
+Re-read `CURRENT_STATE.md` one final time and verify:
+- It doesn't reference anything that was removed or changed this session
+- The "Current Status" section accurately reflects reality
+- The "Next Steps" section gives clear, actionable direction
+- A brand new LLM reading only this file and DECISIONS.md would have enough
+  context to continue the work effectively
+
+If anything is off, fix it now.

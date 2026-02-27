@@ -1,5 +1,27 @@
 # Decisions
 
+## 2026-02-27: DockSpotlightProvider as Separate Protocol
+
+- **Context**: The Spotlight launcher needs docks to provide dynamic, real-time search results. Static actions (`spotlightActions()`) are registered once, but dynamic results must be generated per-keystroke.
+- **Options considered**:
+  1. Add `searchSpotlight(query:)` to DockPlugin directly (forces all docks to implement it)
+  2. Separate `DockSpotlightProvider` protocol (chosen — opt-in)
+  3. Callback-based registration on DockContext
+- **Decision**: Separate `@objc(DockSpotlightProvider)` protocol. Docks that want dynamic search conform to both `DockPlugin` and `DockSpotlightProvider`. The host checks `dock.plugin as? DockSpotlightProvider` at search time.
+- **Tradeoffs**: Opt-in complexity, clean separation, backward compatibility. But two protocols for full Spotlight integration, and runtime type checking is less discoverable.
+- **Affected areas**: DockSpotlightProvider.swift (new), SpotlightManager.queryDockProviders(), HelloDockPlugin (reference impl)
+
+## 2026-02-27: DockSpotlightResult with Non-@objc Action Closure
+
+- **Context**: Dynamic search results need to carry an action closure, but Swift closures aren't representable in Objective-C.
+- **Options considered**:
+  1. Target-action pattern with @objc selectors (too rigid)
+  2. Non-@objc closure property on an @objc class (chosen — same as DockKeyBinding)
+  3. Identifier-based dispatch through executeSpotlightAction
+- **Decision**: `DockSpotlightResult.action` is a non-@objc `(() -> Void)?` property with a fluent `.onAction()` setter. Same pattern established by `DockKeyBinding`.
+- **Tradeoffs**: Simple API, consistent with existing patterns. But action can only be set/called from Swift code, not from ObjC-only consumers.
+- **Affected areas**: DockSpotlightResult class, SpotlightManager result collection
+
 ## 2026-02-27: Extract DockSDK into Standalone Swift Package
 
 - **Context**: DockSDK was originally an Xcode framework project embedded inside the Superdock monorepo (`superdock/DockSDK/`). Third-party dock developers had to either clone the entire Superdock repo or manually copy the framework. Adding TaskDock (a new dock in a sibling directory) caused "No such module 'DockSDK'" errors, and the first fix — adding TaskDock to the Superdock workspace — was rejected because it broke the core principle of independent dock development.

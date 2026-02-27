@@ -20,6 +20,13 @@ import AppKit
 /// ## Lifecycle
 /// `init()` → `dockDidLoad(context:)` → `createMainView()` → `dockDidBecomeActive()`
 /// → (user interacts) → `dockDidResignActive()` → ... → `dockWillUnload()`
+///
+/// ## Spotlight Integration (v1.2.0)
+/// Docks can expose functionality to the Raycast-style command palette in two ways:
+/// 1. **Static actions** via `spotlightActions()` — registered once, always searchable
+/// 2. **Dynamic search** via `DockSpotlightProvider` protocol — real-time query results
+///
+/// For dynamic search, also conform to `DockSpotlightProvider` in your principal class.
 @objc(DockPlugin)
 public protocol DockPlugin: NSObjectProtocol {
 
@@ -79,4 +86,33 @@ public protocol DockPlugin: NSObjectProtocol {
 
     /// Menu items to add to the host menu when this dock is active.
     @objc optional func menuItems() -> [NSMenuItem]
+
+    // MARK: - Key Bindings (v1.1.0)
+
+    /// Keyboard shortcuts this dock wants to register with the host.
+    /// Bindings are scoped: only active when this dock is focused.
+    @objc optional func keyBindings() -> [DockKeyBinding]
+
+    // MARK: - Spotlight Actions (v1.1.0, enhanced v1.2.0)
+
+    /// Static quick actions exposed to the host's global Spotlight command palette.
+    /// These are registered once when the dock loads and always appear in search results.
+    ///
+    /// For dynamic, query-based results, also conform to `DockSpotlightProvider`.
+    @objc optional func spotlightActions() -> [DockSpotlightAction]
+
+    /// Called by the host when the user selects a spotlight action for this dock.
+    @objc optional func executeSpotlightAction(identifier: String)
+
+    // MARK: - Spotlight Sub-View (v1.2.0)
+
+    /// Create a sub-view for drill-down navigation in the Spotlight panel.
+    /// Called when the user selects a spotlight action with `hasDrillDown = true`.
+    ///
+    /// The returned NSView is displayed inside the Spotlight panel, replacing
+    /// the results list. The user presses Escape to go back.
+    ///
+    /// - Parameter actionIdentifier: The identifier of the selected action.
+    /// - Returns: An NSView to display, or nil to fall back to default behavior.
+    @objc optional func createSpotlightSubView(for actionIdentifier: String) -> NSView?
 }
